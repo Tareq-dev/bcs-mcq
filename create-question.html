@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BCS Pro | Admin Suite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -151,13 +150,7 @@
     </div>
 
     <script>
-      fetch("sidebar.html")
-        .then((res) => res.text())
-        .then((data) => {
-          document.getElementById("sidebar-container").innerHTML = data;
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", function () {
         fetch("sidebar.html")
           .then((response) => {
             if (!response.ok) {
