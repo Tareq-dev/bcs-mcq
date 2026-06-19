@@ -5,6 +5,7 @@
     <title>BCS Pro Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body>
@@ -13,7 +14,6 @@
       <div class="main">
         <div class="topbar">
           <h2>Dashboard</h2>
-         
         </div>
 
         <div class="cards">
@@ -56,24 +56,6 @@
       </div>
     </div>
 
-    <div class="modal" id="modal">
-      <div class="modal-box">
-        <span class="close" onclick="closeModal()">✖</span>
-        <h3>Create Exam</h3>
-        <input placeholder="Exam Title" />
-        <input type="number" placeholder="Duration (min)" />
-        <input type="number" placeholder="Total Questions" />
-        <select>
-          <option>Select Subject</option>
-          <option>Bangladesh Affairs</option>
-          <option>English</option>
-          <option>Math</option>
-        </select>
-        <button>Create Exam</button>
-      </div>
-    </div>
-
-     
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         fetch("sidebar.html")
