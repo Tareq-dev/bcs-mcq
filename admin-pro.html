@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>BCS Pro Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div id="sidebar-container"></div>
+      <div class="main">
+        <div class="topbar">
+          <h2>Dashboard</h2>
+         
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <h3>Total Students</h3>
+            <p>5,320</p>
+          </div>
+          <div class="card">
+            <h3>Total Exams</h3>
+            <p>128</p>
+          </div>
+          <div class="card">
+            <h3>Questions</h3>
+            <p>58,450</p>
+          </div>
+          <div class="card">
+            <h3>Today Attempts</h3>
+            <p>1,240</p>
+          </div>
+        </div>
+
+        <table>
+          <tr>
+            <th>Exam Name</th>
+            <th>Date</th>
+            <th>Duration</th>
+            <th>Students</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>BCS Model Test 45</td>
+            <td>20 Jun</td>
+            <td>60 min</td>
+            <td>350</td>
+            <td><span class="status active">Active</span></td>
+            <td>Edit | Delete</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal" id="modal">
+      <div class="modal-box">
+        <span class="close" onclick="closeModal()">✖</span>
+        <h3>Create Exam</h3>
+        <input placeholder="Exam Title" />
+        <input type="number" placeholder="Duration (min)" />
+        <input type="number" placeholder="Total Questions" />
+        <select>
+          <option>Select Subject</option>
+          <option>Bangladesh Affairs</option>
+          <option>English</option>
+          <option>Math</option>
+        </select>
+        <button>Create Exam</button>
+      </div>
+    </div>
+
+     
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("sidebar.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Sidebar file not found!");
+            }
+            return response.text();
+          })
+          .then((data) => {
+            document.getElementById("sidebar-container").innerHTML = data;
+          })
+          .catch((error) => console.error("Error loading sidebar:", error));
+      });
+    </script>
+  </body>
+</html>

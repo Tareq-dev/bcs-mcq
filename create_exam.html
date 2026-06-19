@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BCS Pro | Manage Exams</title>
+     <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50">
+
+    <div class="flex">
+        <div id="sidebar-container"></div>
+
+        <div class="flex-1 p-10">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Manage Exams</h1>
+                <button onclick="openModal()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg">+ Create Exam</button>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border p-2">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-slate-400 text-sm">
+                            <th class="p-4">Title</th>
+                            <th class="p-4">Category</th>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exam-table-body" class="divide-y"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-lg">
+            <h2 class="text-2xl font-bold mb-6">Create New Exam</h2>
+            <input id="title" class="w-full p-3 border rounded-xl mb-3" placeholder="Exam Title" />
+            
+            <select id="category" onchange="resetSelection()" class="w-full p-3 border rounded-xl mb-3 bg-white">
+                <option value="Bangladesh Affairs">Bangladesh Affairs</option>
+                <option value="English">English</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="ICT">ICT</option>
+            </select>
+
+            <div class="flex gap-2 mb-4">
+                <button onclick="toggleMode('auto')" id="btn-auto" class="flex-1 p-2 bg-blue-600 text-white rounded-lg font-bold text-sm">Auto Random</button>
+                <button onclick="toggleMode('manual')" id="btn-manual" class="flex-1 p-2 bg-gray-200 rounded-lg font-bold text-sm">Manual Select</button>
+            </div>
+
+            <div id="auto-section">
+                <input id="qty" type="number" class="w-full p-3 border rounded-xl mb-4" placeholder="Total Questions (Auto)" />
+            </div>
+
+            <div id="manual-section" class="hidden">
+                <input type="text" oninput="searchQuestions(this.value)" placeholder="Search questions..." class="w-full p-3 border rounded-xl mb-2" />
+                <div id="q-pool" class="h-32 overflow-y-auto border rounded-xl p-2 mb-4 bg-slate-50 text-sm">
+                    <p class="text-gray-400">Select category first...</p>
+                </div>
+            </div>
+
+            <input id="time" type="number" class="w-full p-3 border rounded-xl mb-4" placeholder="Time (min)" />
+
+            <div class="flex gap-2">
+                <button onclick="closeModal()" class="w-full p-3 bg-gray-200 rounded-xl">Cancel</button>
+                <button onclick="saveExam()" class="w-full p-3 bg-blue-600 text-white rounded-xl font-bold">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let exams = JSON.parse(localStorage.getItem("exams")) || [];
+        let mode = 'auto'; // ডিফল্ট মোড
+
+        // মোড টগল ফাংশন
+        function toggleMode(m) {
+            mode = m;
+            document.getElementById('btn-auto').className = m === 'auto' ? 'flex-1 p-2 bg-blue-600 text-white rounded-lg font-bold text-sm' : 'flex-1 p-2 bg-gray-200 rounded-lg font-bold text-sm';
+            document.getElementById('btn-manual').className = m === 'manual' ? 'flex-1 p-2 bg-blue-600 text-white rounded-lg font-bold text-sm' : 'flex-1 p-2 bg-gray-200 rounded-lg font-bold text-sm';
+            document.getElementById('auto-section').classList.toggle('hidden', m !== 'auto');
+            document.getElementById('manual-section').classList.toggle('hidden', m !== 'manual');
+        }
+
+        function openModal() { document.getElementById("modal").classList.remove("hidden"); }
+        function closeModal() { document.getElementById("modal").classList.add("hidden"); }
+
+        function saveExam() {
+            const title = document.getElementById("title").value;
+            const category = document.getElementById("category").value;
+            const time = document.getElementById("time").value;
+            const qty = document.getElementById("qty").value;
+
+            if (!title || !time) return alert("Please fill all fields!");
+
+            const examId = Date.now();
+            const fullLink = window.location.origin + "/exam.html?id=" + examId;
+
+            exams.push({ 
+                id: examId, title, category, time, mode, qty, link: fullLink 
+            });
+
+            localStorage.setItem("exams", JSON.stringify(exams));
+            closeModal();
+            renderTable();
+            
+            document.getElementById("title").value = "";
+            document.getElementById("time").value = "";
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("exam-table-body");
+            tbody.innerHTML = exams.map(ex => `
+                <tr>
+                    <td class="p-4 font-bold">${ex.title}</td>
+                    <td class="p-4 text-slate-500">${ex.category}</td>
+                    <td class="p-4 text-slate-500">${ex.time} min</td>
+                    <td class="p-4"><button onclick="copyLink('${ex.link}')" class="text-blue-600 font-bold underline">Copy Link</button></td>
+                </tr>
+            `).join("");
+        }
+
+        function copyLink(link) {
+            navigator.clipboard.writeText(link).then(() => alert("Copied!"));
+        }
+
+        // Sidebar fetch
+        fetch("sidebar.html").then(res => res.text()).then(data => {
+            document.getElementById("sidebar-container").innerHTML = data;
+        });
+
+        renderTable();
+    </script>
+</body>
+</html>

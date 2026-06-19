@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BCS Pro | Admin Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div id="sidebar-container"></div>
+
+      <div class="main">
+        <div class="bg-slate-50 text-slate-800">
+          <div
+            class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 px-6 py-4 flex justify-between items-center shadow-sm"
+          >
+            <div class="flex items-center gap-4">
+              <h1 class="text-xl font-bold text-slate-900">Question Manager</h1>
+              <div
+                id="stats-badge"
+                class="bg-indigo-50 text-indigo-600 px-4 py-1 rounded-full text-xs font-bold border border-indigo-100"
+              >
+                Existing: 0 Questions
+              </div>
+            </div>
+            <button
+              onclick="saveAll()"
+              class="bg-slate-900 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center gap-2"
+            >
+              Save All Questions
+            </button>
+          </div>
+
+          <div
+            class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-8"
+          >
+            <div class="space-y-6">
+              <select
+                id="category"
+                onchange="updateStats()"
+                class="w-full p-4 bg-white border border-slate-200 rounded-2xl font-medium outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              >
+                <option value="Bangladesh Affairs">Bangladesh Affairs</option>
+                <option value="English">English</option>
+                <option value="Math">Mathematics</option>
+                <option value="Science">Science</option>
+              </select>
+
+              <div id="batch-container" class="space-y-6"></div>
+            </div>
+
+            <div class="lg:sticky lg:top-24 h-[calc(100vh-120px)]">
+              <div
+                class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200 border border-slate-100 h-full flex flex-col"
+              >
+                <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                  <span class="w-2 h-6 bg-indigo-500 rounded-full"></span> Live
+                  Preview
+                </h2>
+                <div
+                  id="all-previews"
+                  class="flex-1 overflow-y-auto custom-scrollbar space-y-8 pr-2"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            const categoryStats = {
+              "Bangladesh Affairs": 120,
+              English: 85,
+              Math: 45,
+              Science: 92,
+            };
+
+            function updateStats() {
+              const cat = document.getElementById("category").value;
+              document.getElementById("stats-badge").innerText =
+                `Existing: ${categoryStats[cat] || 0} Questions`;
+            }
+            updateStats();
+
+            const container = document.getElementById("batch-container");
+            for (let i = 1; i <= 10; i++) {
+              container.innerHTML += `
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded">QUESTION ${i}</span>
+                </div>
+                <input type="text" id="q-input-${i}" oninput="updatePreviews()" placeholder="Write your question here..." class="w-full text-base font-medium p-2 border-b border-slate-200 focus:border-indigo-500 outline-none mb-4">
+                <div class="grid grid-cols-2 gap-3">
+                    ${["A", "B", "C", "D"]
+                      .map(
+                        (o) => `
+                        <div class="flex items-center gap-2 border border-slate-200 p-2.5 rounded-xl hover:bg-slate-50">
+                            <input type="radio" name="ans-${i}" value="${o}" onclick="updatePreviews()" class="w-4 h-4 accent-indigo-600">
+                            <input type="text" id="opt-${i}-${o}" oninput="updatePreviews()" placeholder="Option ${o}" class="w-full text-sm outline-none bg-transparent">
+                        </div>
+                    `,
+                      )
+                      .join("")}
+                </div>
+            </div>
+        `;
+            }
+
+            function updatePreviews() {
+              const preview = document.getElementById("all-previews");
+              preview.innerHTML = "";
+              for (let i = 1; i <= 10; i++) {
+                const q =
+                  document.getElementById(`q-input-${i}`).value ||
+                  `Question ${i}`;
+                const selected = document.querySelector(
+                  `input[name="ans-${i}"]:checked`,
+                )?.value;
+                preview.innerHTML += `
+                <div class="group">
+                    <p class="font-bold text-slate-800 text-sm mb-3">${i}. ${q}</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        ${["A", "B", "C", "D"]
+                          .map(
+                            (o) => `
+                            <div class="text-[11px] p-3 border rounded-xl ${selected === o ? "bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-200" : "bg-slate-50 text-slate-600 border-slate-100"} transition-all">
+                                ${o}. ${document.getElementById(`opt-${i}-${o}`).value || "Empty Option"}
+                            </div>
+                        `,
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `;
+              }
+            }
+            updatePreviews();
+
+            function saveAll() {
+              alert("Success: All questions have been saved to the database!");
+            }
+            fetch("sidebar.html")
+              .then((res) => res.text())
+              .then((data) => {
+                document.getElementById("sidebar-container").innerHTML = data;
+              });
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      fetch("sidebar.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("sidebar-container").innerHTML = data;
+        });
+    </script>
+  </body>
+</html>
